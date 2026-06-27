@@ -1758,6 +1758,7 @@ input[type="file"] {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
 .form-group {
@@ -2810,7 +2811,7 @@ button:disabled {
         grid-template-columns: 1fr;
         gap: 0.5rem;
     }
-    
+
     .help-box {
         width: 95%;
         max-width: none;
@@ -3071,11 +3072,11 @@ button:disabled {
         width: 95%;
         max-height: 90vh;
     }
-    
+
     .field-edit-actions {
         flex-wrap: wrap;
     }
-    
+
     .field-edit-btn {
         flex: 1;
         min-width: 120px;
@@ -3346,6 +3347,11 @@ button:disabled {
 :root[data-theme="light"] .extended-fields-toggle.expanded .expand-icon,
 :root[data-theme="light"] .new-field-header.expanded .expand-icon {
     color: white;
+}
+
+/* specify for both themes*/
+.new-field-header .add-icon {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* Save to Folder button in new field form */
@@ -3847,9 +3853,7 @@ button:focus:not(:active):not(.processing):not(.success):not(.error):not(.warnin
 
 .new-field-form {
     display: none;
-    padding: 0.75rem;
     background: var(--bg-secondary);
-    border-top: 1px solid rgba(74, 127, 255, 0.1);
 }
 
 .new-field-form.expanded {
@@ -3872,6 +3876,10 @@ button:focus:not(:active):not(.processing):not(.success):not(.error):not(.warnin
 .new-field-form label {
     font-size: 0.75rem;
     margin-bottom: 0.25rem;
+}
+
+.new-field-divider {
+    color: var(--text-secondary);
 }
 
 .new-field-actions {
@@ -3930,12 +3938,32 @@ button:focus:not(:active):not(.processing):not(.success):not(.error):not(.warnin
     box-shadow: 0 4px 12px rgba(58, 58, 58, 0.4);
 }
 
-.new-field-actions .btn-cancel {
-    background: linear-gradient(135deg, #5a2a2a 0%, #7a3a3a 100%);
-    color: white;
+.new-field-inputs {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.new-field-actions .btn-cancel:hover {
+.new-field-inputs-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.new-field-inputs-box .cancel-btn {
+    width: 31.8px;
+    height: 31.8px;
+    background: linear-gradient(135deg, #5a2a2a 0%, #7a3a3a 100%);
+    color: white;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 3px;
+}
+
+.new-field-inputs-box .cancel-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(90, 45, 45, 0.4);
 }
