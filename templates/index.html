@@ -1,0 +1,461 @@
+<!--
+  Metadata Remote - Intelligent audio metadata editor
+  Copyright (C) 2025 Dr. William Nelson Leonard
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mdrm</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="theme-toggle-wrapper">
+            <label class="theme-toggle" for="theme-switch" title="Toggle theme (Alt+T)" aria-label="Theme toggle" aria-keyshortcuts="Alt+T">
+                <input type="checkbox" id="theme-switch" class="theme-switch-checkbox" aria-checked="false">
+                <span class="theme-switch-slider">
+                    <span class="theme-icon moon">☽</span>
+                    <span class="theme-icon sun">☼</span>
+                </span>
+            </label>
+        </div>
+        <h1 style="margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 1.5rem;">
+            <a href="https://www.thelifeyoucansave.org" target="_blank" rel="noopener noreferrer" style="display: inline;">
+                <img id="app-logo" src="{{ url_for('static', filename='mdrm-logo-dark-theme.png') }}" alt="metadata remote" style="height: 1rem; width: auto;">
+            </a>
+        </h1>
+        <button class="help-button" id="help-button" title="Show keyboard shortcuts" tabindex="0"><b>?</b></button>
+    </div>
+    
+    <div class="container">
+        <div class="folders" tabindex="0" id="folders-pane">
+            <div class="pane-header">
+                <span>Folders <span class="file-count" id="folder-count">(0)</span></span>
+                <div class="icon-controls">
+                    <button class="control-icon" id="folders-filter-btn" title="Filter folders (/)" tabindex="0">
+                        🔍
+                    </button>
+                    <div class="sort-controls">
+                        <button class="control-icon sort-field-btn" id="folders-sort-btn" title="Sort by: Name" tabindex="0">
+                            ↕️
+                        </button>
+                        <button class="control-icon sort-direction-btn" id="folders-sort-direction" title="Click to reverse order" tabindex="0">
+                            <span class="sort-indicator" id="folders-sort-indicator">▲</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-container" id="folders-filter">
+                <input type="text" class="filter-input" placeholder="Filter folders..." id="folders-filter-input">
+            </div>
+            <div class="sort-dropdown" id="folders-sort-dropdown">
+                <div class="sort-option active" data-sort="name">Name</div>
+                <div class="sort-option" data-sort="date">Date Modified</div>
+                <div class="sort-option" data-sort="size">Size</div>
+            </div>
+            <div class="folders-scroll-area">
+                <div id="folder-tree" class="tree"></div>
+            </div>
+        </div>
+        
+        <div class="divider" id="divider1"></div>
+
+        <div class="files" tabindex="0" id="files-pane">
+            <div class="pane-header">
+                <span>Files <span class="file-count" id="file-count">(0)</span></span>
+                <div class="icon-controls">
+                    <button class="control-icon" id="files-filter-btn" title="Filter files (/)" tabindex="0">
+                        🔍
+                    </button>
+                    <div class="sort-controls">
+                        <button class="control-icon sort-field-btn" id="files-sort-btn" title="Sort by: Name" tabindex="0">
+                            ↕️
+                        </button>
+                        <button class="control-icon sort-direction-btn" id="files-sort-direction" title="Click to reverse order" tabindex="0">
+                            <span class="sort-indicator" id="files-sort-indicator">▲</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-container" id="files-filter">
+                <input type="text" class="filter-input" placeholder="Filter files..." id="files-filter-input">
+            </div>
+            <div class="sort-dropdown" id="files-sort-dropdown">
+                <div class="sort-option active" data-sort="name">Name</div>
+                <div class="sort-option" data-sort="date">Date Modified</div>
+                <div class="sort-option" data-sort="type">Type</div>
+                <div class="sort-option" data-sort="size">Size</div>
+            </div>
+            <div class="files-scroll-area">
+                <ul id="file-list"></ul>
+            </div>
+        </div>
+        
+        <div class="divider" id="divider2"></div>
+        
+        <div class="metadata">
+            <div class="metadata-content">
+                <div id="no-file-message" class="no-file-selected">
+                    Select a file to edit its metadata
+                </div>
+                
+                <div id="metadata-section" style="display: none;">
+                    <h3>Metadata for: <span id="current-filename" class="filename-display" tabindex="0"></span></h3>
+                    
+                    <div class="filename-edit">
+                        <input type="text" id="filename-input" placeholder="Enter new filename">
+                        <button class="filename-save btn-status" onclick="saveFilename()">
+                            <span class="btn-status-content">Save</span>
+                            <span class="btn-status-message"></span>
+                        </button>
+                        <button class="filename-reset" onclick="resetFilename()">Reset</button>
+                        <button class="filename-cancel" onclick="cancelFilenameEdit()">✕</button>
+                    </div>
+                    
+                    <div id="metadata-loading-indicator" class="metadata-loading-indicator" style="display: none;">
+                        <div class="loading-spinner-container">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-text">Loading metadata...</div>
+                        </div>
+                    </div>
+                    
+                    <div id="metadata-content-wrapper">
+                    
+                    <div class="album-art-section">
+                        <div class="album-art-container">
+                            <div id="art-display">
+                                <div class="album-art-placeholder">No album art</div>
+                            </div>
+                            <div class="album-art-controls">
+                                <button class="upload-btn" onclick="document.getElementById('art-upload').click()">Upload</button>
+                                <button class="save-image-btn btn-status" onclick="saveAlbumArt()" style="display: none;">
+                                    <span class="btn-status-content">Apply to file</span>
+                                    <span class="btn-status-message"></span>
+                                </button>
+                                <button class="apply-folder-btn btn-status" onclick="applyArtToFolder()" style="display: none;">
+                                    <span class="btn-status-content">Apply to folder</span>
+                                    <span class="btn-status-message"></span>
+                                </button>
+                                <button class="delete-art-btn btn-status" onclick="deleteAlbumArt()" style="display: none;">
+                                    <span class="btn-status-content">Delete</span>
+                                    <span class="btn-status-message"></span>
+                                </button>
+                                <input type="file" id="art-upload" accept="image/*" onchange="handleArtUpload(event)">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="metadata-form">
+                        <!-- Standard fields will be dynamically rendered here -->
+                        <div id="standard-fields-container"></div>
+                        
+                        <!-- Consolidated apply controls for Track #, Disc #, and Year -->
+                        <div class="grouped-apply-controls" id="grouped-apply-controls" style="display: none;">
+                            <div class="grouped-apply-header">
+                                <span class="grouped-apply-title">Apply changes:</span>
+                            </div>
+                            <div class="grouped-apply-items" id="grouped-apply-items">
+                                <!-- Grouped field controls will be dynamically rendered here -->
+                            </div>
+                        </div>
+                        
+                    </form>
+
+                    <!-- Add new metadata field section -->
+                    <div class="new-field-header" tabindex="0" role="button" aria-expanded="false" aria-controls="new-field-form"
+                        onclick="window.MetadataRemote.Metadata.Editor.toggleNewFieldForm()">
+                        <span class="add-icon">✚</span>
+                        <span>Add new metadata field</span>
+                    </div>
+                    <div class="new-field-form" id="new-field-form" style="display: none;">
+                        <div class="new-field-inputs-box">
+                            <button type="button" class="cancel-btn" onclick="window.MetadataRemote.Metadata.Editor.cancelNewField()">
+                                X
+                            </button>
+                            <div class="new-field-inputs">
+                                <input type="text" id="new-field-name" placeholder="Field name" pattern="[A-Za-z0-9_]+"
+                                    title="Only letters, numbers, and underscores allowed" maxlength="50">
+                                <span class="new-field-divider">:</span>
+                                <input type="text" id="new-field-value" placeholder="Content"
+                                    title="Enter initial value">
+                            </div>
+                        </div>
+                        <div class="new-field-actions">
+                            <button type="button" class="btn btn-primary"
+                                onclick="window.MetadataRemote.Metadata.Editor.createNewField(false)">
+                                Save to File
+                            </button>
+                            <button type="button" class="btn btn-secondary"
+                                onclick="window.MetadataRemote.Metadata.Editor.createNewField(true)">
+                                Save to Folder
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Extended fields toggle -->
+                    <div class="extended-fields-toggle" tabindex="0" role="button" aria-expanded="false" aria-controls="extended-fields-wrapper" onclick="window.MetadataRemote.Metadata.Editor.toggleExtendedFields()">
+                        <span class="expand-icon">▶</span>
+                        <span>Extended metadata fields</span>
+                    </div>
+                    
+                    <!-- Container for extended fields -->
+                    <div id="extended-fields-wrapper" style="display: none;">
+                        <div id="dynamic-fields-container"></div>
+                    </div>
+                    
+                    <!-- Save and Reset buttons at the bottom -->
+                    <div class="buttons">
+                        <button type="button" class="save-btn btn-status" onclick="save()">
+                            <span class="btn-status-content">Save all fields to file</span>
+                            <span class="btn-status-message"></span>
+                        </button>
+                        <button type="button" class="clear-btn btn-status" onclick="resetForm()">
+                            <span class="btn-status-content">Reset</span>
+                            <span class="btn-status-message"></span>
+                        </button>
+                    </div>
+                    
+                    <div id="status" class="status"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Editing History Panel -->
+            <div class="history-panel collapsed" id="history-panel">
+                <div class="history-header">
+                    <div class="history-title">
+                        <span>Editing History</span>
+                        <span class="history-toggle">▲</span>
+                    </div>
+                    <button class="history-clear-btn" onclick="clearHistory()" title="Clear all history">
+                        <span class="clear-text">Clear History</span>
+                    </button>
+                </div>
+                <div class="history-content">
+                    <div class="history-list" id="history-list">
+                        <div class="history-loading">Loading history...</div>
+                    </div>
+                    <div class="divider history-divider" id="history-divider"></div>
+                    <div class="history-details" id="history-details">
+                        <div class="history-details-empty">Select an action to view details</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden audio player -->
+    <audio id="audio-player"></audio>
+
+    <!-- Help Box Modal -->
+    <div class="help-overlay" id="help-overlay"></div>
+    <div class="help-box" id="help-box">
+        <button class="help-close" id="help-close">✕</button>
+        
+        <div class="help-app-name">
+            <h2>Metadata Remote (mdrm) v1.2.0</h2>
+        </div>
+        
+        <div class="help-content">
+            <div class="help-sections-grid">
+                <div class="help-section">
+                    <h3 class="help-section-title">Navigation</h3>
+                    <div class="help-shortcut-list">
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Navigate items</span>
+                            <span class="help-keys"><span class="help-key">↑</span><span class="help-key">↓</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Jump pages</span>
+                            <span class="help-keys"><span class="help-key">PgUp</span><span class="help-key">PgDn</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Expand / Load</span>
+                            <span class="help-keys"><span class="help-key">Enter</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Play file</span>
+                            <span class="help-keys"><span class="help-key">Enter</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Switch panes</span>
+                            <span class="help-keys"><span class="help-key">Tab</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h3 class="help-section-title">Editing</h3>
+                    <div class="help-shortcut-list">
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Edit field</span>
+                            <span class="help-keys"><span class="help-key">Enter</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Exit edit</span>
+                            <span class="help-keys"><span class="help-key">Enter</span> / <span class="help-key">Esc</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Delete field</span>
+                            <span class="help-keys"><span class="help-key">Shift</span>+<span class="help-key">Delete</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Save to file</span>
+                            <span class="help-keys">Navigate to <span class="help-key">File</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Save to folder</span>
+                            <span class="help-keys">Navigate to <span class="help-key">Folder</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h3 class="help-section-title">Sorting</h3>
+                    <div class="help-shortcut-list">
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Reverse sort</span>
+                            <span class="help-keys"><span class="help-key">Ctrl</span><span class="help-key-plus">+</span><span class="help-key">Shift</span><span class="help-key-plus">+</span><span class="help-key">S</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h3 class="help-section-title">General</h3>
+                    <div class="help-shortcut-list">
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Cancel / Close</span>
+                            <span class="help-keys"><span class="help-key">Esc</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Toggle theme</span>
+                            <span class="help-keys"><span class="help-key">Alt</span><span class="help-key-plus">+</span><span class="help-key">T</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h3 class="help-section-title">Renaming</h3>
+                    <div class="help-shortcut-list">
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Rename file</span>
+                            <span class="help-keys"><span class="help-key">↑</span>  to name → <span class="help-key">Enter</span></span>
+                        </div>
+                        <div class="help-shortcut-item">
+                            <span class="help-description">Rename folder</span>
+                            <span class="help-keys"><span class="help-key">Enter</span><span class="help-key">Enter</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-footer">
+            <div class="help-copyright">© 2025 Dr. William Nelson Leonard</div>
+            <a href="https://github.com/wow-signal-dev/metadata-remote" target="_blank" class="help-github-link">View on GitHub</a>
+        </div>
+    </div>
+
+    <!-- Field Edit Modal -->
+    <div class="field-edit-overlay" id="field-edit-overlay" role="presentation"></div>
+    <div class="field-edit-box" id="field-edit-box" role="dialog" aria-modal="true" aria-labelledby="field-edit-header">
+        <div class="field-edit-header" id="field-edit-header">
+            <span id="field-edit-filename" class="field-edit-filename"></span>: 
+            <span id="field-edit-fieldname" class="field-edit-fieldname"></span>
+        </div>
+        
+        <div class="field-edit-content">
+            <textarea 
+                id="field-edit-textarea"
+                class="field-edit-textarea"
+                placeholder="Enter field content..."
+                spellcheck="false"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                aria-label="Field content editor"
+            ></textarea>
+        </div>
+        
+        <div class="field-edit-actions">
+            <button class="field-edit-btn field-edit-apply-file btn-status" id="field-edit-apply-file" disabled aria-label="Apply changes to current file">
+                <span class="btn-status-content">Apply to file</span>
+                <span class="btn-status-message"></span>
+            </button>
+            <button class="field-edit-btn field-edit-apply-folder btn-status" id="field-edit-apply-folder" disabled aria-label="Apply changes to all files in folder">
+                <span class="btn-status-content">Apply to folder</span>
+                <span class="btn-status-message"></span>
+            </button>
+            <button class="field-edit-btn field-edit-reset" id="field-edit-reset" aria-label="Reset to original content">
+                Reset
+            </button>
+            <button class="field-edit-btn field-edit-cancel" id="field-edit-cancel" aria-label="Cancel and close">
+                Cancel
+            </button>
+        </div>
+    </div>
+  
+    <!-- Core modules -->
+    <script src="{{ url_for('static', filename='js/state.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+
+    <!-- UI modules -->
+    <script src="{{ url_for('static', filename='js/ui/button-status.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui/utilities.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui/pane-resize.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui/filter-sort.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui/theme-toggle.js') }}"></script>
+
+    <!-- Audio modules -->
+    <script src="{{ url_for('static', filename='js/audio/player.js') }}"></script>
+
+    <!-- Navigation modules -->
+    <script src="{{ url_for('static', filename='js/navigation/tree.js') }}"></script>
+    
+    <!-- Navigation utilities -->
+    <script src="{{ url_for('static', filename='js/navigation/keyboard-utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation/focus-manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation/state-machine.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation/router.js') }}"></script>
+    
+    <!-- Navigation contexts -->
+    <script src="{{ url_for('static', filename='js/navigation/contexts/pane-navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation/contexts/header-navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation/contexts/list-navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation/contexts/form-navigation.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='js/navigation/keyboard.js') }}"></script>
+
+    <!-- Files modules -->
+    <script src="{{ url_for('static', filename='js/files/manager.js') }}"></script>
+
+    <!-- Metadata modules -->
+    <script src="{{ url_for('static', filename='js/metadata/editor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/metadata/album-art.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/metadata/inference.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/metadata/transition-controller.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/metadata/field-edit-modal.js') }}"></script>
+
+    <!-- History modules -->
+    <script src="{{ url_for('static', filename='js/history/manager.js') }}"></script>
+  
+    <!-- Main application -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
