@@ -14,7 +14,7 @@ Need to edit audio metadata on a headless server? Until now you had to either us
 
 ```bash
 # Download docker-compose.yml
-wget https://raw.githubusercontent.com/wow-signal-dev/metadata-remote/main/docker-compose.yml
+wget https://raw.githubusercontent.com/painkiller-alt/metadata-remote/main/docker-compose.yml
 
 # Edit your music directory path
 nano docker-compose.yml  # Change /path/to/your/music:/music
