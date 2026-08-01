@@ -366,7 +366,7 @@
                 
                 // Remember current state
                 const currentFileBefore = State.currentFile;
-                const currentPathsBefore = [...State.selectedFileItems];
+                const currentPathsBefore = [...State.selectedTreeItems];
                 
                 
                 // Perform the undo
@@ -455,7 +455,7 @@
                 
                 // Remember current state
                 const currentFileBefore = State.currentFile;
-                const currentPathsBefore = [...State.selectedFileItems];
+                const currentPathsBefore = [...State.selectedTreeItems];
                 
                 
                 // Perform the redo

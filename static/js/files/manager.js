@@ -636,6 +636,7 @@
             showButtonStatus(button, 'Renaming...', 'processing');
             
             try {
+                const oldName = State.currentFile;
                 const result = await API.renameFile(State.currentFile, newName);
                 
                 if (result.status === 'success') {
@@ -644,7 +645,7 @@
                     document.getElementById('current-filename').textContent = newName;
                     this.cancelFilenameEdit();
                     showButtonStatus(button, 'Renamed!', 'success');
-                    loadFilesCallback(State.selectedFileItems);
+                    loadFilesCallback(State.selectedTreeItems);
                     loadHistoryCallback();
                     
                     // Restore focus to filename display after successful save
