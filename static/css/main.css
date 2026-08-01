@@ -1166,6 +1166,12 @@ input:autofill {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
 }
 
+.tree-checkbox:indeterminate+label::before {
+    border-color: var(--accent-primary);
+    background-color: var(--accent-primary);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M0 3h8v2H0z'/%3e%3c/svg%3e");
+}
+
 :root[data-theme="light"] .tree-checkbox+label::before {
     border: 1px solid #2b2b2b;
 }
