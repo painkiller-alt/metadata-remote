@@ -287,11 +287,6 @@
             checkbox.className = "tree-checkbox";
             checkbox.id = "tree-checkbox-" + item.name + "-" + level;
             checkbox.type = "checkbox";
-            if (State.selectedTreeItems.includes(item.path)) {
-                checkbox.checked = true;
-            } else {
-                checkbox.checked = false;
-            }
 
             const label = document.createElement("label");
             label.className = "tree-checkbox-label";
