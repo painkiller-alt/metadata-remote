@@ -208,7 +208,7 @@
             
             // Update modal header with proper escaping
             // Extract just the filename from the full path
-            const filename = State.currentFile ? State.currentFile.split('/').pop() : 'Unknown file';
+            const filename = State.currentFile ? State.currentFile.split('/').pop().split('\\').pop() : 'Unknown file';
             this.filenameEl.textContent = filename;
             this.fieldnameEl.textContent = fieldInfo.display_name || fieldId;
             

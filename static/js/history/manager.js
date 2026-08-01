@@ -216,7 +216,7 @@
                     const fileItem = document.createElement('div');
                     fileItem.className = 'history-change-file';
                     // Extract just the filename from the full path
-                    const filename = file.split('/').pop();
+                    const filename = file.split('/').pop().split('\\').pop();
                     fileItem.textContent = filename;
                     // Store full path as title for tooltip on hover
                     fileItem.title = file;
@@ -383,7 +383,7 @@
                         // Use the newPath provided by the backend
                         
                         State.currentFile = result.newPath;
-                        State.originalFilename = result.newPath.split('/').pop();
+                        State.originalFilename = result.newPath.split('/').pop().split('\\').pop();
                         document.getElementById('current-filename').textContent = State.originalFilename;
                         
                         // Reload metadata after a short delay
@@ -472,7 +472,7 @@
                         // Use the newPath provided by the backend
                         
                         State.currentFile = result.newPath;
-                        State.originalFilename = result.newPath.split('/').pop();
+                        State.originalFilename = result.newPath.split('/').pop().split('\\').pop();
                         document.getElementById('current-filename').textContent = State.originalFilename;
                         
                         // Reload metadata after a short delay

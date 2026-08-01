@@ -419,7 +419,7 @@
             selectFileItemCallback(listItem);
             
             State.currentFile = filepath;
-            State.originalFilename = filepath.split('/').pop();
+            State.originalFilename = filepath.split('/').pop().split('\\').pop();
             document.getElementById('current-filename').textContent = State.originalFilename;
             document.getElementById('no-file-message').style.display = 'none';
             document.getElementById('metadata-section').style.display = 'block';
