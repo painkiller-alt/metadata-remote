@@ -264,11 +264,8 @@ const AudioMetadataEditor = {
         document.querySelectorAll('.tree .tree-item').forEach(el => {
             const checkbox = el.querySelector('[type="checkbox"]');
             checkbox.checked = false;
-            if (State.selectedTreeItems !== undefined && !State.selectedTreeItems.includes(el.dataset.path)) {
-                const index = State.selectedTreeItems.indexOf(el.dataset.path);
-                State.selectedTreeItems.splice(index, 1);
-            }
         });
+        State.selectedTreeItems = []; // with focus we can select only one so we should remove all before adding it.
         const current_checkbox = item.querySelector('[type="checkbox"]');
         current_checkbox.checked = true;
         if (State.selectedTreeItems !== undefined && !State.selectedTreeItems.includes(item.dataset.path)) {
