@@ -387,10 +387,7 @@
          * @param {boolean} value - check value to assign
          */
         async modifyCheckRecursivly(item, level, value) {
-            const data = await API.loadTreeChildren(item.path);
-            const filteredItems = this.filterTreeItems(data.items, State.foldersFilter);
-            const sortedItems = this.sortItems(filteredItems);
-            const checkbox = document.querySelector(`[id=tree-checkbox-${item.name}-${level}]`);
+            const checkbox = document.querySelector(`[id="tree-checkbox-${item.name}-${level}"]`);
             if (checkbox !== null) {
                 checkbox.checked = value;
             }
@@ -404,11 +401,16 @@
                     State.selectedTreeItems.splice(index, 1);
                 }
             }
-            for (const inner_item of sortedItems) {
-                if (inner_item.type === 'folder') {
-                    await this.modifyCheckRecursivly(inner_item, level+1, value);
-                }
-            };
+
+            const data = await API.loadTreeChildren(item.path);
+            const filteredItems = this.filterTreeItems(data.items, State.foldersFilter);
+            const sortedItems = this.sortItems(filteredItems);
+
+            const pending = sortedItems
+                .filter(inner_item => inner_item.type === 'folder')
+                .map(inner_item => this.modifyCheckRecursivly(inner_item, level + 1, value));
+
+            await Promise.all(pending);
         },
 
         /**
