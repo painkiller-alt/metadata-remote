@@ -261,13 +261,21 @@ const AudioMetadataEditor = {
         document.querySelectorAll('.files .keyboard-focus').forEach(el => {
             el.classList.remove('keyboard-focus');
         });
-        document.querySelectorAll('.tree .tree-item').forEach(el => {
-            const checkbox = el.querySelector('[type="checkbox"]');
-            checkbox.checked = false;
-        });
-        State.selectedTreeItems = []; // with focus we can select only one so we should remove all before adding it.
-        const current_checkbox = item.querySelector('[type="checkbox"]');
-        current_checkbox.checked = true;
+        // if there is any children folders, they are not selected so we'll show it in the UI 
+        API.loadTreeChildren(item.dataset.path)
+            .then((data) => {
+                document.querySelectorAll('.tree .tree-item').forEach(el => {
+                    const checkbox = el.querySelector('[type="checkbox"]');
+                    checkbox.checked = false;
+                    checkbox.indeterminate = false;
+                });
+                State.selectedTreeItems = []; // with focus we can select only one so we should remove all before adding it.
+                const current_checkbox = item.querySelector('[type="checkbox"]');
+                current_checkbox.checked = true;
+                if (data.items !== undefined && data.items.length > 0) {
+                    current_checkbox.indeterminate = true;
+                }
+            })
         if (State.selectedTreeItems !== undefined && !State.selectedTreeItems.includes(item.dataset.path)) {
             State.selectedTreeItems.push(item.dataset.path);
         }

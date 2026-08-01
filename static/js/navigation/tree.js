@@ -315,6 +315,7 @@
                 e.stopPropagation();
                 e.preventDefault();
                 checkbox.checked = !checkbox.checked;
+                checkbox.indeterminate = false;
                 await this.modifyCheckRecursively(item, level, checkbox.checked);
 
                 const folderPaths = [];
@@ -385,6 +386,7 @@
             const checkbox = document.querySelector(`[id="tree-checkbox-${item.name}-${level}"]`);
             if (checkbox !== null) {
                 checkbox.checked = value;
+                checkbox.indeterminate = false;
             }
             if (value) {
                 if (State.selectedTreeItems !== undefined && !State.selectedTreeItems.includes(item.path)) {
