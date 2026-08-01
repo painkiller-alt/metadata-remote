@@ -315,7 +315,7 @@
                 e.stopPropagation();
                 e.preventDefault();
                 checkbox.checked = !checkbox.checked;
-                await this.modifyCheckRecursivly(item, level, checkbox.checked);
+                await this.modifyCheckRecursively(item, level, checkbox.checked);
 
                 const folderPaths = [];
                 State.selectedTreeItems.forEach((path) => {
@@ -403,7 +403,7 @@
 
             const pending = sortedItems
                 .filter(inner_item => inner_item.type === 'folder')
-                .map(inner_item => this.modifyCheckRecursivly(inner_item, level + 1, value));
+                .map(inner_item => this.modifyCheckRecursively(inner_item, level + 1, value));
 
             await Promise.all(pending);
         },
