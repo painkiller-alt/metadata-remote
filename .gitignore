@@ -2,6 +2,7 @@ venv/
 __pycache__/
 *.pyc
 .env
+.vscode/
 .idea/metadata-remote.iml
 .idea/misc.xml
 .idea/modules.xml
