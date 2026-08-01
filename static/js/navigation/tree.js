@@ -377,11 +377,11 @@
         },
 
         /**
-         * Load children for a tree node
+         * Modify checkmarks and append to selected items recursively
          * @param {Object} item - Item to modify
          * @param {boolean} value - check value to assign
          */
-        async modifyCheckRecursivly(item, level, value) {
+        async modifyCheckRecursively(item, level, value) {
             const checkbox = document.querySelector(`[id="tree-checkbox-${item.name}-${level}"]`);
             if (checkbox !== null) {
                 checkbox.checked = value;
