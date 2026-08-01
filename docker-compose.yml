@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   metadata-remote:
-    image: ghcr.io/wow-signal-dev/metadata-remote:latest
+    image: ghcr.io/painkiller-alt/metadata-remote:latest
     container_name: metadata-remote
     ports:
       - "8338:8338"
@@ -18,7 +18,7 @@ services:
       # - SHOW_HIDDEN_FILES=true
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8338/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8338/health"]
       interval: 30s
       timeout: 10s
       retries: 3
