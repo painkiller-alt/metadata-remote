@@ -252,7 +252,7 @@ const AudioMetadataEditor = {
         if (State.selectedTreeItem) {
             State.selectedTreeItem.classList.remove('selected', 'keyboard-focus');
         }
-        
+
         item.classList.add('selected', 'keyboard-focus');
         State.selectedTreeItem = item;
         State.focusedPane = 'folders';
@@ -275,10 +275,10 @@ const AudioMetadataEditor = {
                 if (data.items !== undefined && data.items.length > 0) {
                     current_checkbox.indeterminate = true;
                 }
+                if (State.selectedTreeItems !== undefined && !State.selectedTreeItems.includes(item.dataset.path)) {
+                    State.selectedTreeItems.push(item.dataset.path);
+                }
             })
-        if (State.selectedTreeItems !== undefined && !State.selectedTreeItems.includes(item.dataset.path)) {
-            State.selectedTreeItems.push(item.dataset.path);
-        }
         
         // When called from keyboard navigation, ensure the item has DOM focus
         if (isKeyboard) {
